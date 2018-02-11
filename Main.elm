@@ -22,12 +22,11 @@ main =
 
 
 type alias Model =
-    Int
+    List Int
 
 
-init : ( Model, Cmd Msg )
 init =
-    ( 20, Cmd.none )
+    ( [ 10, 20, 30, 40, 50, 60, 70 ], Cmd.none )
 
 
 
@@ -38,11 +37,11 @@ type Msg
     = MoveUp
 
 
-update : Msg -> Model -> ( Int, Cmd Msg )
+update : Msg -> Model -> ( List Int, Cmd Msg )
 update msg model =
     case msg of
         MoveUp ->
-            ( 10, Cmd.none )
+            ( List.map (\el -> el + 10) model, Cmd.none )
 
 
 
@@ -53,7 +52,7 @@ view : Model -> Html Msg
 view model =
     let
         squares =
-            List.map (\el -> drawSqr (toFloat el * toFloat model) 10 (el * 40)) (List.range 1 10)
+            List.map (\el -> drawSqr (toFloat (el * 2)) 10 (el * 2)) model
     in
     div [ onClick MoveUp ]
         [ toHtml (collage 1000 500 squares) ]
