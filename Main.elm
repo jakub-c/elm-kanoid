@@ -9,7 +9,12 @@ import Html.Events exposing (..)
 
 main : Program Never Model Msg
 main =
-    Html.beginnerProgram { model = model, update = update, view = view }
+    Html.program
+        { init = init
+        , view = view
+        , update = update
+        , subscriptions = subscriptions
+        }
 
 
 
@@ -20,9 +25,9 @@ type alias Model =
     Int
 
 
-model : Model
-model =
-    20
+init : ( Model, Cmd Msg )
+init =
+    ( 20, Cmd.none )
 
 
 
@@ -33,11 +38,11 @@ type Msg
     = MoveUp
 
 
-update : Msg -> Model -> number
+update : Msg -> Model -> ( Int, Cmd Msg )
 update msg model =
     case msg of
         MoveUp ->
-            10
+            ( 10, Cmd.none )
 
 
 
@@ -61,3 +66,12 @@ drawSqr movX movY rCol =
             (rgb rCol 100 100)
             (rect 10 10)
         )
+
+
+
+-- SUBSCRIPTIONS
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none
