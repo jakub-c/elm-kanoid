@@ -6,11 +6,18 @@ import Element exposing (..)
 import Html exposing (..)
 
 
-main : Html.Html msg
 main =
+    Html.beginnerProgram { model = 20, update = update, view = view }
+
+
+update content =
+    content
+
+
+view model =
     let
         squares =
-            List.map (\el -> drawSqr (toFloat el * 20) 10 (el * 40)) (List.range 1 10)
+            List.map (\el -> drawSqr (toFloat el * model) 10 (el * 40)) (List.range 1 10)
     in
     toHtml (collage 1000 500 squares)
 
