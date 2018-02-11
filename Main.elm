@@ -25,8 +25,9 @@ type alias Model =
     List Int
 
 
+init : ( List Int, Cmd msg )
 init =
-    ( [ 10, 20, 30, 40, 50, 60, 70 ], Cmd.none )
+    ( List.map (\el -> el * 10) (List.range 1 40), Cmd.none )
 
 
 
