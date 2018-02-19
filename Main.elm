@@ -36,8 +36,8 @@ type alias Model =
 init =
     ( { x = 0
       , y = 0
-      , height = 100
-      , width = 400
+      , height = 20
+      , width = 80
       , velocity = 5
       }
     , Cmd.none
@@ -63,18 +63,17 @@ update msg model =
                 ( model, Cmd.none )
 
 
-view : { a | x : Int, y : Int } -> Html msg
 view model =
     div []
-        [ toHtml (collage 1000 500 [ drawSqr model.x model.y 10 ]) ]
+        [ toHtml (collage 1000 500 [ drawSqr model.x model.y model.height model.width ]) ]
 
 
-drawSqr : Int -> Int -> Int -> Form
-drawSqr movX movY rCol =
-    move ( toFloat movX, toFloat movY )
+drawSqr : Int -> Int -> Int -> Int -> Form
+drawSqr posX posY height width =
+    move ( toFloat posX, toFloat posY )
         (filled
-            (rgb rCol 100 100)
-            (rect 10 10)
+            (rgb 100 100 100)
+            (rect (toFloat width) (toFloat height))
         )
 
 
