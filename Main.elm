@@ -4,10 +4,10 @@ import Collage exposing (..)
 import Color exposing (..)
 import Element exposing (..)
 import Html exposing (..)
-import Html.Events exposing (..)
+import Keyboard
 
 
-main : Program Never Model Msg
+main : Program Never { height : Int, width : Int, x : Int, y : Int } Msg
 main =
     Html.program
         { init = init
@@ -21,13 +21,27 @@ main =
 -- MODEL
 
 
+type alias Player =
+    { x : Int
+    , y : Int
+    , height : Int
+    , width : Int
+    }
+
+
 type alias Model =
-    List Int
+    Player
 
 
-init : ( List Int, Cmd msg )
+init : ( { height : Int, width : Int, x : Int, y : Int }, Cmd msg )
 init =
-    ( List.map (\el -> el * 10) (List.range 1 40), Cmd.none )
+    ( { x = 0
+      , y = 0
+      , height = 100
+      , width = 400
+      }
+    , Cmd.none
+    )
 
 
 
@@ -35,33 +49,30 @@ init =
 
 
 type Msg
-    = MoveUp
+    = KeyMsg Keyboard.KeyCode
 
 
-update : Msg -> Model -> ( List Int, Cmd Msg )
+update : Msg -> { a | x : number } -> ( { a | x : number }, Cmd msg )
 update msg model =
     case msg of
-        MoveUp ->
-            ( List.map (\el -> el + 10) model, Cmd.none )
+        KeyMsg code ->
+            if code == 39 then
+                ( { model | x = model.x + 1 }, Cmd.none )
+            else if code == 37 then
+                ( { model | x = model.x - 1 }, Cmd.none )
+            else
+                ( model, Cmd.none )
 
 
-
--- VIEW
-
-
-view : Model -> Html Msg
+view : { a | x : Int, y : Int } -> Html msg
 view model =
-    let
-        squares =
-            List.map (\el -> drawSqr (toFloat (el * 2)) 10 (el * 2)) model
-    in
-    div [ onClick MoveUp ]
-        [ toHtml (collage 1000 500 squares) ]
+    div []
+        [ toHtml (collage 1000 500 [ drawSqr model.x model.y 10 ]) ]
 
 
-drawSqr : Float -> Float -> Int -> Form
+drawSqr : Int -> Int -> Int -> Form
 drawSqr movX movY rCol =
-    move ( movX, movY )
+    move ( toFloat movX, toFloat movY )
         (filled
             (rgb rCol 100 100)
             (rect 10 10)
@@ -74,4 +85,4 @@ drawSqr movX movY rCol =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.none
+    Sub.batch [ Keyboard.presses KeyMsg ]
