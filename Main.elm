@@ -4,6 +4,7 @@ import Collage exposing (..)
 import Color exposing (..)
 import Element exposing (..)
 import Html exposing (..)
+import Html.Attributes exposing (..)
 import Keyboard
 
 
@@ -20,12 +21,17 @@ main =
 -- MODEL
 
 
+type alias Window =
+    { h : Int, w : Int }
+
+
 type alias Player =
     { x : Int
     , y : Int
     , height : Int
     , width : Int
     , velocity : Int
+    , window : Window
     }
 
 
@@ -35,10 +41,11 @@ type alias Model =
 
 init =
     ( { x = 0
-      , y = 0
+      , y = round (-480 / 2) + 10
       , height = 20
       , width = 80
       , velocity = 5
+      , window = { h = 640, w = 480 }
       }
     , Cmd.none
     )
@@ -65,7 +72,7 @@ update msg model =
 
 view model =
     div []
-        [ toHtml (collage 1000 500 [ drawSqr model.x model.y model.height model.width ]) ]
+        [ toHtml (collage model.window.h model.window.w [ drawSqr model.x model.y model.height model.width ]) ]
 
 
 drawSqr : Int -> Int -> Int -> Int -> Form
