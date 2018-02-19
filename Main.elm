@@ -7,7 +7,6 @@ import Html exposing (..)
 import Keyboard
 
 
-main : Program Never { height : Int, width : Int, x : Int, y : Int } Msg
 main =
     Html.program
         { init = init
@@ -26,6 +25,7 @@ type alias Player =
     , y : Int
     , height : Int
     , width : Int
+    , velocity : Int
     }
 
 
@@ -33,12 +33,12 @@ type alias Model =
     Player
 
 
-init : ( { height : Int, width : Int, x : Int, y : Int }, Cmd msg )
 init =
     ( { x = 0
       , y = 0
       , height = 100
       , width = 400
+      , velocity = 5
       }
     , Cmd.none
     )
@@ -52,14 +52,13 @@ type Msg
     = KeyMsg Keyboard.KeyCode
 
 
-update : Msg -> { a | x : number } -> ( { a | x : number }, Cmd msg )
 update msg model =
     case msg of
         KeyMsg code ->
             if code == 39 then
-                ( { model | x = model.x + 1 }, Cmd.none )
+                ( { model | x = model.x + model.velocity }, Cmd.none )
             else if code == 37 then
-                ( { model | x = model.x - 1 }, Cmd.none )
+                ( { model | x = model.x - model.velocity }, Cmd.none )
             else
                 ( model, Cmd.none )
 
