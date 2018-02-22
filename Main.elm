@@ -1,11 +1,14 @@
 module Main exposing (..)
 
+-- import Html.Attributes exposing (..)
+
+import AnimationFrame exposing (..)
 import Collage exposing (..)
 import Color exposing (..)
 import Element exposing (..)
 import Html exposing (..)
-import Html.Attributes exposing (..)
 import Keyboard
+import Time exposing (Time)
 
 
 main =
@@ -18,6 +21,8 @@ main =
 
 
 
+-- TODO implement game loop:
+-- https://stackoverflow.com/questions/12273451/how-to-fix-delay-in-javascript-keydown
 -- MODEL
 
 
@@ -32,6 +37,7 @@ type alias Player =
     , width : Int
     , velocity : Int
     , window : Window
+    , keyPressed : Int
     }
 
 
@@ -46,6 +52,7 @@ init =
       , width = 80
       , velocity = 5
       , window = { h = 640, w = 480 }
+      , keyPressed = 0
       }
     , Cmd.none
     )
@@ -56,15 +63,23 @@ init =
 
 
 type Msg
-    = KeyMsg Keyboard.KeyCode
+    = KeyDown Keyboard.KeyCode
+    | KeyUp Keyboard.KeyCode
+    | Tick Time
 
 
 update msg model =
     case msg of
-        KeyMsg code ->
-            if code == 39 then
+        KeyDown code ->
+            ( { model | keyPressed = code }, Cmd.none )
+
+        KeyUp code ->
+            ( model, Cmd.none )
+
+        Tick newTime ->
+            if model.keyPressed == 39 then
                 ( { model | x = model.x + model.velocity }, Cmd.none )
-            else if code == 37 then
+            else if model.keyPressed == 37 then
                 ( { model | x = model.x - model.velocity }, Cmd.none )
             else
                 ( model, Cmd.none )
@@ -90,4 +105,8 @@ drawSqr posX posY height width =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.batch [ Keyboard.presses KeyMsg ]
+    Sub.batch
+        [ Keyboard.downs KeyDown
+        , Keyboard.ups KeyUp
+        , times Tick
+        ]
