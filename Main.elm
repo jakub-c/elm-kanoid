@@ -37,7 +37,8 @@ type alias Player =
     , width : Int
     , velocity : Int
     , window : Window
-    , keyPressed : Int
+    , left : Bool
+    , right : Bool
     }
 
 
@@ -51,8 +52,12 @@ init =
       , height = 20
       , width = 80
       , velocity = 5
-      , window = { h = 640, w = 480 }
-      , keyPressed = 0
+      , window =
+            { h = 640
+            , w = 480
+            }
+      , left = False
+      , right = False
       }
     , Cmd.none
     )
@@ -71,15 +76,25 @@ type Msg
 update msg model =
     case msg of
         KeyDown code ->
-            ( { model | keyPressed = code }, Cmd.none )
+            if code == 39 then
+                ( { model | left = True }, Cmd.none )
+            else if code == 37 then
+                ( { model | right = True }, Cmd.none )
+            else
+                ( model, Cmd.none )
 
         KeyUp code ->
-            ( model, Cmd.none )
+            if code == 39 then
+                ( { model | left = False }, Cmd.none )
+            else if code == 37 then
+                ( { model | right = False }, Cmd.none )
+            else
+                ( model, Cmd.none )
 
         Tick newTime ->
-            if model.keyPressed == 39 then
+            if model.left == True then
                 ( { model | x = model.x + model.velocity }, Cmd.none )
-            else if model.keyPressed == 37 then
+            else if model.right == True then
                 ( { model | x = model.x - model.velocity }, Cmd.none )
             else
                 ( model, Cmd.none )
