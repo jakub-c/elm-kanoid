@@ -30,6 +30,12 @@ type alias Window =
     { h : Int, w : Int }
 
 
+type alias KeyPressed =
+    { left : Bool
+    , right : Bool
+    }
+
+
 type alias Player =
     { x : Int
     , y : Int
@@ -37,10 +43,7 @@ type alias Player =
     , width : Int
     , velocity : Int
     , window : Window
-    , keyPressed :
-        { left : Bool
-        , right : Bool
-        }
+    , keyPressed : KeyPressed
     }
 
 
@@ -77,12 +80,12 @@ type Msg
     | Tick Time
 
 
-updateLeftKey : { b | left : a } -> c -> { b | left : c }
+updateLeftKey : KeyPressed -> Bool -> KeyPressed
 updateLeftKey data val =
     { data | left = val }
 
 
-updateRightKey : { b | right : a } -> c -> { b | right : c }
+updateRightKey : KeyPressed -> Bool -> KeyPressed
 updateRightKey data val =
     { data | right = val }
 
