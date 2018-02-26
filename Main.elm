@@ -37,8 +37,10 @@ type alias Player =
     , width : Int
     , velocity : Int
     , window : Window
-    , left : Bool
-    , right : Bool
+    , keyPressed :
+        { left : Bool
+        , right : Bool
+        }
     }
 
 
@@ -56,8 +58,10 @@ init =
             { h = 640
             , w = 480
             }
-      , left = False
-      , right = False
+      , keyPressed =
+            { left = False
+            , right = False
+            }
       }
     , Cmd.none
     )
@@ -73,28 +77,38 @@ type Msg
     | Tick Time
 
 
+updateLeftKey : { b | left : a } -> c -> { b | left : c }
+updateLeftKey data val =
+    { data | left = val }
+
+
+updateRightKey : { b | right : a } -> c -> { b | right : c }
+updateRightKey data val =
+    { data | right = val }
+
+
 update msg model =
     case msg of
         KeyDown code ->
             if code == 39 then
-                ( { model | left = True }, Cmd.none )
+                ( { model | keyPressed = updateLeftKey model.keyPressed True }, Cmd.none )
             else if code == 37 then
-                ( { model | right = True }, Cmd.none )
+                ( { model | keyPressed = updateRightKey model.keyPressed True }, Cmd.none )
             else
                 ( model, Cmd.none )
 
         KeyUp code ->
             if code == 39 then
-                ( { model | left = False }, Cmd.none )
+                ( { model | keyPressed = updateLeftKey model.keyPressed False }, Cmd.none )
             else if code == 37 then
-                ( { model | right = False }, Cmd.none )
+                ( { model | keyPressed = updateRightKey model.keyPressed False }, Cmd.none )
             else
                 ( model, Cmd.none )
 
         Tick newTime ->
-            if model.left == True then
+            if model.keyPressed.left == True then
                 ( { model | x = model.x + model.velocity }, Cmd.none )
-            else if model.right == True then
+            else if model.keyPressed.right == True then
                 ( { model | x = model.x - model.velocity }, Cmd.none )
             else
                 ( model, Cmd.none )
