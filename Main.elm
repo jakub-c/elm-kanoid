@@ -27,7 +27,7 @@ main =
 
 
 type alias Window =
-    { h : Int, w : Int }
+    { w : Int, h : Int }
 
 
 type alias KeyPressed =
@@ -58,8 +58,8 @@ init =
       , width = 80
       , velocity = 5
       , window =
-            { h = 640
-            , w = 480
+            { w = 640
+            , h = 480
             }
       , keyPressed =
             { left = False
@@ -93,33 +93,40 @@ updateRightKey data val =
 update msg model =
     case msg of
         KeyDown code ->
-            if code == 39 then
+            if code == 37 then
                 ( { model | keyPressed = updateLeftKey model.keyPressed True }, Cmd.none )
-            else if code == 37 then
+            else if code == 39 then
                 ( { model | keyPressed = updateRightKey model.keyPressed True }, Cmd.none )
             else
                 ( model, Cmd.none )
 
         KeyUp code ->
-            if code == 39 then
+            if code == 37 then
                 ( { model | keyPressed = updateLeftKey model.keyPressed False }, Cmd.none )
-            else if code == 37 then
+            else if code == 39 then
                 ( { model | keyPressed = updateRightKey model.keyPressed False }, Cmd.none )
             else
                 ( model, Cmd.none )
 
         Tick newTime ->
-            if model.keyPressed.left == True then
-                ( { model | x = model.x + model.velocity }, Cmd.none )
-            else if model.keyPressed.right == True then
-                ( { model | x = model.x - model.velocity }, Cmd.none )
-            else
-                ( model, Cmd.none )
+            let
+                leftWallX =
+                    round ((toFloat model.window.w / 2) * (-1) + (toFloat model.width / 2))
+
+                rightWallX =
+                    round ((toFloat model.window.w / 2) - (toFloat model.width / 2))
+            in
+                if (model.keyPressed.left == True && model.x >= leftWallX) then
+                    ( { model | x = model.x - model.velocity }, Cmd.none )
+                else if (model.keyPressed.right == True && model.x <= rightWallX) then
+                    ( { model | x = model.x + model.velocity }, Cmd.none )
+                else
+                    ( model, Cmd.none )
 
 
 view model =
     div []
-        [ toHtml (collage model.window.h model.window.w [ drawSqr model.x model.y model.height model.width ]) ]
+        [ toHtml (collage model.window.w model.window.h [ drawSqr model.x model.y model.height model.width ]) ]
 
 
 drawSqr : Int -> Int -> Int -> Int -> Form
