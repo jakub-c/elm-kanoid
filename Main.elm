@@ -36,6 +36,14 @@ type alias KeyPressed =
     }
 
 
+type alias Ball =
+    { x : Int
+    , y : Int
+    , w : Int
+    , h : Int
+    }
+
+
 type alias Player =
     { x : Int
     , y : Int
@@ -44,6 +52,7 @@ type alias Player =
     , velocity : Int
     , window : Window
     , keyPressed : KeyPressed
+    , ball : Ball
     }
 
 
@@ -64,6 +73,12 @@ init =
       , keyPressed =
             { left = False
             , right = False
+            }
+      , ball =
+            { x = 0
+            , y = 0
+            , w = 20
+            , h = 20
             }
       }
     , Cmd.none
@@ -126,7 +141,14 @@ update msg model =
 
 view model =
     div []
-        [ toHtml (collage model.window.w model.window.h [ drawSqr model.x model.y model.height model.width ]) ]
+        [ toHtml
+            (collage model.window.w
+                model.window.h
+                [ drawSqr model.x model.y model.height model.width
+                , drawSqr model.ball.x model.ball.y model.ball.h model.ball.w
+                ]
+            )
+        ]
 
 
 drawSqr : Int -> Int -> Int -> Int -> Form
