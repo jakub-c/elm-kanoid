@@ -51,6 +51,11 @@ type alias Player =
     , height : Int
     , width : Int
     , velocity : Int
+    }
+
+
+type alias Game =
+    { player : Player
     , window : Window
     , keyPressed : KeyPressed
     , ball : Ball
@@ -58,15 +63,17 @@ type alias Player =
 
 
 type alias Model =
-    Player
+    Game
 
 
 init =
-    ( { x = 0
-      , y = round (-480 / 2) + 10
-      , height = 20
-      , width = 80
-      , velocity = 5
+    ( { player =
+            { x = 0
+            , y = round (-480 / 2) + 10
+            , height = 20
+            , width = 80
+            , velocity = 5
+            }
       , window =
             { w = 640
             , h = 480
@@ -135,15 +142,18 @@ update msg model =
 movePlayer keys model =
     let
         leftWallX =
-            round ((toFloat model.window.w / 2) * (-1) + (toFloat model.width / 2))
+            round ((toFloat model.window.w / 2) * (-1) + (toFloat model.player.width / 2))
 
         rightWallX =
-            round ((toFloat model.window.w / 2) - (toFloat model.width / 2))
+            round ((toFloat model.window.w / 2) - (toFloat model.player.width / 2))
+
+        updatePlayerX data val =
+            { data | x = val }
     in
-        if (model.keyPressed.left == True && model.x >= leftWallX) then
-            { model | x = model.x - model.velocity }
-        else if (model.keyPressed.right == True && model.x <= rightWallX) then
-            { model | x = model.x + model.velocity }
+        if (model.keyPressed.left == True && model.player.x >= leftWallX) then
+            { model | player = updatePlayerX model.player (model.player.x - model.player.velocity) }
+        else if (model.keyPressed.right == True && model.player.x <= rightWallX) then
+            { model | player = updatePlayerX model.player (model.player.x + model.player.velocity) }
         else
             model
 
@@ -154,7 +164,7 @@ moveBall model =
             { data | x = valX, y = valY }
     in
         if (model.ball.init == True) then
-            { model | ball = updateBallPos model.ball model.x (model.y + model.height) }
+            { model | ball = updateBallPos model.ball model.player.x (model.player.y + model.player.height) }
         else
             model
 
@@ -164,7 +174,7 @@ view model =
         [ toHtml
             (collage model.window.w
                 model.window.h
-                [ drawSqr model.x model.y model.height model.width
+                [ drawSqr model.player.x model.player.y model.player.height model.player.width
                 , drawSqr model.ball.x model.ball.y model.ball.h model.ball.w
                 ]
             )
