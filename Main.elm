@@ -41,6 +41,7 @@ type alias Ball =
     , y : Int
     , w : Int
     , h : Int
+    , init : Bool
     }
 
 
@@ -79,6 +80,7 @@ init =
             , y = 0
             , w = 20
             , h = 20
+            , init = True
             }
       }
     , Cmd.none
@@ -95,48 +97,66 @@ type Msg
     | Tick Time
 
 
-updateLeftKey : KeyPressed -> Bool -> KeyPressed
-updateLeftKey data val =
-    { data | left = val }
-
-
-updateRightKey : KeyPressed -> Bool -> KeyPressed
-updateRightKey data val =
-    { data | right = val }
-
-
 update msg model =
-    case msg of
-        KeyDown code ->
-            if code == 37 then
-                ( { model | keyPressed = updateLeftKey model.keyPressed True }, Cmd.none )
-            else if code == 39 then
-                ( { model | keyPressed = updateRightKey model.keyPressed True }, Cmd.none )
-            else
-                ( model, Cmd.none )
+    let
+        updateLeftKey : KeyPressed -> Bool -> KeyPressed
+        updateLeftKey data val =
+            { data | left = val }
 
-        KeyUp code ->
-            if code == 37 then
-                ( { model | keyPressed = updateLeftKey model.keyPressed False }, Cmd.none )
-            else if code == 39 then
-                ( { model | keyPressed = updateRightKey model.keyPressed False }, Cmd.none )
-            else
-                ( model, Cmd.none )
-
-        Tick newTime ->
-            let
-                leftWallX =
-                    round ((toFloat model.window.w / 2) * (-1) + (toFloat model.width / 2))
-
-                rightWallX =
-                    round ((toFloat model.window.w / 2) - (toFloat model.width / 2))
-            in
-                if (model.keyPressed.left == True && model.x >= leftWallX) then
-                    ( { model | x = model.x - model.velocity }, Cmd.none )
-                else if (model.keyPressed.right == True && model.x <= rightWallX) then
-                    ( { model | x = model.x + model.velocity }, Cmd.none )
+        updateRightKey : KeyPressed -> Bool -> KeyPressed
+        updateRightKey data val =
+            { data | right = val }
+    in
+        case msg of
+            KeyDown code ->
+                if code == 37 then
+                    ( { model | keyPressed = updateLeftKey model.keyPressed True }, Cmd.none )
+                else if code == 39 then
+                    ( { model | keyPressed = updateRightKey model.keyPressed True }, Cmd.none )
                 else
                     ( model, Cmd.none )
+
+            KeyUp code ->
+                if code == 37 then
+                    ( { model | keyPressed = updateLeftKey model.keyPressed False }, Cmd.none )
+                else if code == 39 then
+                    ( { model | keyPressed = updateRightKey model.keyPressed False }, Cmd.none )
+                else
+                    ( model, Cmd.none )
+
+            Tick newTime ->
+                ( model
+                    |> movePlayer model.keyPressed
+                    |> moveBall
+                , Cmd.none
+                )
+
+
+movePlayer keys model =
+    let
+        leftWallX =
+            round ((toFloat model.window.w / 2) * (-1) + (toFloat model.width / 2))
+
+        rightWallX =
+            round ((toFloat model.window.w / 2) - (toFloat model.width / 2))
+    in
+        if (model.keyPressed.left == True && model.x >= leftWallX) then
+            { model | x = model.x - model.velocity }
+        else if (model.keyPressed.right == True && model.x <= rightWallX) then
+            { model | x = model.x + model.velocity }
+        else
+            model
+
+
+moveBall model =
+    let
+        updateBallPos data valX valY =
+            { data | x = valX, y = valY }
+    in
+        if (model.ball.init == True) then
+            { model | ball = updateBallPos model.ball model.x (model.y + model.height) }
+        else
+            model
 
 
 view model =
