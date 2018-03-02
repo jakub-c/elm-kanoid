@@ -41,7 +41,10 @@ type alias Ball =
     , y : Int
     , w : Int
     , h : Int
+    , velocity : Int
     , init : Bool
+    , dirX : Int
+    , dirY : Int
     }
 
 
@@ -87,7 +90,10 @@ init =
             , y = 0
             , w = 20
             , h = 20
-            , init = True
+            , velocity = 5
+            , init = False
+            , dirX = 1
+            , dirY = -1
             }
       }
     , Cmd.none
@@ -133,6 +139,8 @@ update msg model =
 
             Tick newTime ->
                 ( model
+                    |> ballCollisionWallX
+                    |> ballCollisionWallY
                     |> movePlayer model.keyPressed
                     |> moveBall
                 , Cmd.none
@@ -158,15 +166,61 @@ movePlayer keys model =
             model
 
 
+ballCollisionWallX model =
+    let
+        updateDirX data dirVal =
+            { data | dirX = dirVal }
+
+        rightWall =
+            (round (toFloat model.window.w / 2) - round (toFloat model.ball.w / 2))
+
+        leftWall =
+            ((round (toFloat model.window.w / 2)) * (-1) + round (toFloat model.ball.w / 2))
+    in
+        if (model.ball.x >= rightWall || model.ball.x <= leftWall) then
+            { model | ball = updateDirX model.ball (model.ball.dirX * (-1)) }
+        else
+            model
+
+
+ballCollisionWallY model =
+    let
+        updateDirY data dirVal =
+            { data | dirY = dirVal }
+
+        bottomWall =
+            (round (toFloat model.window.h / 2) - round (toFloat model.ball.h / 2))
+
+        topWall =
+            ((round (toFloat model.window.h / 2)) * (-1) + round (toFloat model.ball.h / 2))
+    in
+        if (model.ball.y >= bottomWall || model.ball.y <= topWall) then
+            { model | ball = updateDirY model.ball (model.ball.dirY * (-1)) }
+        else
+            model
+
+
 moveBall model =
     let
         updateBallPos data valX valY =
             { data | x = valX, y = valY }
     in
         if (model.ball.init == True) then
-            { model | ball = updateBallPos model.ball model.player.x (model.player.y + model.player.height) }
+            { model
+                | ball =
+                    updateBallPos
+                        model.ball
+                        model.player.x
+                        (model.player.y + model.player.height)
+            }
         else
-            model
+            { model
+                | ball =
+                    updateBallPos
+                        model.ball
+                        (model.ball.x + model.ball.dirX * model.ball.velocity)
+                        (model.ball.y - model.ball.dirY * model.ball.velocity)
+            }
 
 
 view model =
