@@ -1,3 +1,3 @@
 before_script:
-  - npm installnpm install -g elm
+  - npm install -g elm
 script: elm-make Main.elm --output=index.html
