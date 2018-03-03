@@ -1,3 +1,4 @@
+# taken from: https://github.com/rtfeldman/node-elm-compiler/blob/master/.travis.yml#L37-L39
 sudo: false
 
 cache:
@@ -37,8 +38,7 @@ install:
   - chmod +x $(npm config get prefix)/bin/elm-make
   - npm install
 script: 
-  - node_modules/.bin/elm-package install --yes
-  - node_modules/.bin/elm-make Main.elm --yes --output=index.html
+  - elm-make Main.elm --yes --output=index.html
 deploy:
   provider: pages
   skip-cleanup: true
