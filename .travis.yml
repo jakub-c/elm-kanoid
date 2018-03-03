@@ -1,6 +1,8 @@
 before_script:
   - npm install -g elm
-script: elm-make Main.elm --output=index.html --yes
+script: 
+  - elm package install --yes
+  - elm-make Main.elm --output=index.html
 deploy:
   provider: pages
   skip-cleanup: true
