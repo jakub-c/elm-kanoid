@@ -7,6 +7,7 @@ import Collage exposing (..)
 import Color exposing (..)
 import Element exposing (..)
 import Html exposing (..)
+import Html.Attributes exposing (style)
 import Keyboard
 import Time exposing (Time)
 
@@ -74,8 +75,8 @@ init =
             { x = 0
             , y = round (-480 / 2) + 10
             , height = 20
-            , width = 80
-            , velocity = 5
+            , width = 140
+            , velocity = 10
             }
       , window =
             { w = 640
@@ -141,6 +142,7 @@ update msg model =
                 ( model
                     |> ballCollisionWallX
                     |> ballCollisionWallY
+                    |> playerCollision
                     |> movePlayer model.keyPressed
                     |> moveBall
                 , Cmd.none
@@ -150,17 +152,17 @@ update msg model =
 movePlayer keys model =
     let
         leftWallX =
-            round ((toFloat model.window.w / 2) * (-1) + (toFloat model.player.width / 2))
+            round ((toFloat model.window.w / 2) * (-1))
 
         rightWallX =
-            round ((toFloat model.window.w / 2) - (toFloat model.player.width / 2))
+            round (toFloat model.window.w / 2) - model.player.width
 
         updatePlayerX data val =
             { data | x = val }
     in
-        if (model.keyPressed.left == True && model.player.x >= leftWallX) then
+        if (model.keyPressed.left == True && (model.player.x - model.player.velocity) >= leftWallX) then
             { model | player = updatePlayerX model.player (model.player.x - model.player.velocity) }
-        else if (model.keyPressed.right == True && model.player.x <= rightWallX) then
+        else if (model.keyPressed.right == True && (model.player.x + model.player.velocity) <= rightWallX) then
             { model | player = updatePlayerX model.player (model.player.x + model.player.velocity) }
         else
             model
@@ -172,12 +174,16 @@ ballCollisionWallX model =
             { data | dirX = dirVal }
 
         rightWall =
-            (round (toFloat model.window.w / 2) - round (toFloat model.ball.w / 2))
+            round (toFloat model.window.w / 2) - model.ball.w
 
         leftWall =
-            ((round (toFloat model.window.w / 2)) * (-1) + round (toFloat model.ball.w / 2))
+            round (toFloat model.window.w / 2) * (-1)
     in
-        if (model.ball.x >= rightWall || model.ball.x <= leftWall) then
+        if
+            ((model.ball.x + model.ball.velocity <= leftWall)
+                || (model.ball.x - model.ball.velocity >= rightWall)
+            )
+        then
             { model | ball = updateDirX model.ball (model.ball.dirX * (-1)) }
         else
             model
@@ -188,13 +194,49 @@ ballCollisionWallY model =
         updateDirY data dirVal =
             { data | dirY = dirVal }
 
-        bottomWall =
-            (round (toFloat model.window.h / 2) - round (toFloat model.ball.h / 2))
-
         topWall =
-            ((round (toFloat model.window.h / 2)) * (-1) + round (toFloat model.ball.h / 2))
+            (round (toFloat model.window.h / 2) - round (toFloat model.ball.h))
+
+        bottomWall =
+            ((round (toFloat model.window.h / 2)) * (-1) - round (toFloat model.ball.h / 2))
     in
-        if (model.ball.y >= bottomWall || model.ball.y <= topWall) then
+        if
+            ((model.ball.y - model.ball.velocity <= bottomWall)
+                || (model.ball.y - model.ball.velocity >= topWall)
+            )
+        then
+            { model | ball = updateDirY model.ball (model.ball.dirY * (-1)) }
+        else
+            model
+
+
+playerCollision model =
+    let
+        updateDirY data dirVal =
+            { data | dirY = dirVal }
+
+        ballX =
+            model.ball.x
+
+        playerLeftSide =
+            model.player.x
+
+        playerRightSide =
+            (model.player.x + model.player.width)
+
+        playerTopSide =
+            model.player.y
+
+        playerBottomSide =
+            model.player.y + model.player.height
+    in
+        if
+            ((model.ball.x <= model.player.x + model.player.width)
+                && (model.ball.x + model.ball.w >= model.player.x)
+                && (model.ball.y <= model.player.y + model.player.height)
+                && (model.ball.h + model.ball.y >= model.player.y)
+            )
+        then
             { model | ball = updateDirY model.ball (model.ball.dirY * (-1)) }
         else
             model
@@ -224,20 +266,26 @@ moveBall model =
 
 
 view model =
-    div []
+    div
+        [ style
+            [ ( "border", "solid 1px red" )
+            , ( "height", toString model.window.h ++ "px" )
+            , ( "width", toString model.window.w ++ "px" )
+            ]
+        ]
         [ toHtml
             (collage model.window.w
                 model.window.h
-                [ drawSqr model.player.x model.player.y model.player.height model.player.width
-                , drawSqr model.ball.x model.ball.y model.ball.h model.ball.w
+                [ drawSqr model.player.x model.player.y model.player.width model.player.height
+                , drawSqr model.ball.x model.ball.y model.ball.w model.ball.h
                 ]
             )
         ]
 
 
 drawSqr : Int -> Int -> Int -> Int -> Form
-drawSqr posX posY height width =
-    move ( toFloat posX, toFloat posY )
+drawSqr posX posY width height =
+    move ( toFloat (posX + round (toFloat width / 2)), toFloat (posY + round (toFloat height / 2)) )
         (filled
             (rgb 100 100 100)
             (rect (toFloat width) (toFloat height))
