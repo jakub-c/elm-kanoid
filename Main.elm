@@ -282,19 +282,23 @@ view model =
         [ toHtml
             (collage model.window.w
                 model.window.h
-                [ drawSqr model.player.x model.player.y model.player.width model.player.height
-                , drawSqr model.ball.x model.ball.y model.ball.w model.ball.h
+                [ drawObj (round (toFloat model.window.w / 2) * (-1))
+                    (round (toFloat model.window.h / 2) * (-1))
+                    model.window.w
+                    model.window.h
+                    "assets/bg.png"
+                , drawObj model.player.x model.player.y model.player.width model.player.height "assets/player.png"
+                , drawObj model.ball.x model.ball.y model.ball.w model.ball.h "assets/ball.png"
                 ]
             )
         ]
 
 
-drawSqr : Int -> Int -> Int -> Int -> Form
-drawSqr posX posY width height =
+drawObj : Int -> Int -> Int -> Int -> String -> Form
+drawObj posX posY width height img =
     move ( toFloat (posX + round (toFloat width / 2)), toFloat (posY + round (toFloat height / 2)) )
-        (filled
-            (rgb 100 100 100)
-            (rect (toFloat width) (toFloat height))
+        (toForm
+            (image (width) (height) img)
         )
 
 
