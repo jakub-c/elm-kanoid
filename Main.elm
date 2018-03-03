@@ -92,7 +92,7 @@ init =
             , w = 20
             , h = 20
             , velocity = 5
-            , init = False
+            , init = True
             , dirX = 1
             , dirY = -1
             }
@@ -120,6 +120,9 @@ update msg model =
         updateRightKey : KeyPressed -> Bool -> KeyPressed
         updateRightKey data val =
             { data | right = val }
+
+        updateSpaceKey data =
+            { data | init = False }
     in
         case msg of
             KeyDown code ->
@@ -127,6 +130,8 @@ update msg model =
                     ( { model | keyPressed = updateLeftKey model.keyPressed True }, Cmd.none )
                 else if code == 39 then
                     ( { model | keyPressed = updateRightKey model.keyPressed True }, Cmd.none )
+                else if code == 32 then
+                    ( { model | ball = updateSpaceKey model.ball }, Cmd.none )
                 else
                     ( model, Cmd.none )
 
@@ -199,13 +204,14 @@ ballCollisionWallY model =
 
         bottomWall =
             ((round (toFloat model.window.h / 2)) * (-1) - round (toFloat model.ball.h / 2))
+
+        resetBall data =
+            { data | init = True }
     in
-        if
-            ((model.ball.y - model.ball.velocity <= bottomWall)
-                || (model.ball.y - model.ball.velocity >= topWall)
-            )
-        then
+        if (model.ball.y - model.ball.velocity >= topWall) then
             { model | ball = updateDirY model.ball (model.ball.dirY * (-1)) }
+        else if (model.ball.y - model.ball.velocity <= bottomWall) then
+            { model | ball = resetBall model.ball }
         else
             model
 
@@ -252,8 +258,8 @@ moveBall model =
                 | ball =
                     updateBallPos
                         model.ball
-                        model.player.x
-                        (model.player.y + model.player.height)
+                        (model.player.x + round (toFloat model.player.width / 2) - round (toFloat model.ball.w / 2))
+                        (model.player.y + model.player.height + 1)
             }
         else
             { model
