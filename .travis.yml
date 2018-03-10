@@ -30,7 +30,7 @@ install:
   - cd ..
 
 script:
-  - elm-format --validate src tests
+  # - elm-format --validate src tests
   - elm test
   - elm-make Main.elm --yes --output=index.html
 
