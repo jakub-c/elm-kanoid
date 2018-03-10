@@ -1,0 +1,30 @@
+{
+  "name": "elm-kanoid",
+  "version": "0.1.0",
+  "description": "Elm clone of arkanoid",
+  "main": "Main.elm",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {
+    "elm": "^0.18.0"
+  },
+  "devDependencies": {
+    "elm-test": "^0.18.12"
+  },
+  "scripts": {
+    "test:init": "node_modules/.bin/elm-test init",
+    "test:watch": "node_modules/.bin/elm-test --watch",
+    "test": "node_modules/.bin/elm-test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jakub-c/elm-kanoid.git"
+  },
+  "author": "Jakub",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jakub-c/elm-kanoid/issues"
+  },
+  "homepage": "https://github.com/jakub-c/elm-kanoid#readme"
+}
