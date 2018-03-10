@@ -45,5 +45,6 @@ deploy:
   skip-cleanup: false
   github-token: $GITHUB_TOKEN
   keep-history: false
+  target-branch: gh-pages
   on:
     branch: master
