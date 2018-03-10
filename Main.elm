@@ -148,13 +148,13 @@ update msg model =
                     |> ballCollisionWallX
                     |> ballCollisionWallY
                     |> playerCollision
-                    |> movePlayer model.keyPressed
+                    |> movePlayer
                     |> moveBall
                 , Cmd.none
                 )
 
 
-movePlayer keys model =
+movePlayer model =
     let
         leftWallX =
             round ((toFloat model.window.w / 2) * (-1))
