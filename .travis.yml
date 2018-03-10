@@ -38,6 +38,7 @@ install:
   - chmod +x $(npm config get prefix)/bin/elm-make
   - npm install
 script: 
+  - npm test
   - elm-make Main.elm --yes --output=index.html
 deploy:
   provider: pages
