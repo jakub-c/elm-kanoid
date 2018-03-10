@@ -1,4 +1,4 @@
-module Example exposing (..)
+module MovePlayer exposing (..)
 
 import Expect exposing (Expectation)
 
