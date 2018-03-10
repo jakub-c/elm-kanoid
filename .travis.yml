@@ -42,7 +42,7 @@ script:
   - elm-make Main.elm --yes --output=index.html
 deploy:
   provider: pages
-  skip-cleanup: true
+  skip-cleanup: false
   github-token: $GITHUB_TOKEN
   keep-history: true
   on:
