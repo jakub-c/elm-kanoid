@@ -165,8 +165,10 @@ movePlayer model =
         updatePlayerX data val =
             { data | x = val }
     in
-        if (model.keyPressed.left == True && (model.player.x - model.player.velocity) >= leftWallX) then
+        if (model.keyPressed.left == True && (model.player.x - model.player.velocity) > leftWallX) then
             { model | player = updatePlayerX model.player (model.player.x - model.player.velocity) }
+        else if (model.keyPressed.left == True && (model.player.x - model.player.velocity) <= leftWallX) then
+            { model | player = updatePlayerX model.player (round ((toFloat model.window.w / 2) * (-1))) }
         else if (model.keyPressed.right == True && (model.player.x + model.player.velocity) <= rightWallX) then
             { model | player = updatePlayerX model.player (model.player.x + model.player.velocity) }
         else
