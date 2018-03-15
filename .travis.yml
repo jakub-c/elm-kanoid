@@ -30,7 +30,6 @@ install:
   - cd ..
 
 script:
-  # - elm-format --validate src tests
   - elm test
   - elm-make Main.elm --yes --output=index.html
 
@@ -38,6 +37,6 @@ deploy:
   provider: pages
   skip-cleanup: true
   github-token: $GITHUB_TOKEN  # Set in travis-ci.org dashboard, marked secure
-  keep-history: false
+  keep-history: true
   on:
     branch: master
