@@ -288,9 +288,9 @@ view model =
                     (round (toFloat model.window.h / 2) * (-1))
                     model.window.w
                     model.window.h
-                    "assets/bg.png"
-                , drawObj model.player.x model.player.y model.player.width model.player.height "assets/player.png"
-                , drawObj model.ball.x model.ball.y model.ball.w model.ball.h "assets/ball.png"
+                    "assets/bg_stone.png"
+                , drawObj model.player.x model.player.y model.player.width model.player.height "assets/spr_player.png"
+                , drawObj model.ball.x model.ball.y model.ball.w model.ball.h "assets/spr_ball.png"
                 ]
             )
         ]
