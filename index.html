@@ -11809,27 +11809,27 @@ var _jakub_c$elm_kanoid$Main$view = function (model) {
 			_0: _elm_lang$html$Html_Attributes$style(
 				{
 					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'border', _1: 'solid 1px red'},
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'height',
+						_1: A2(
+							_elm_lang$core$Basics_ops['++'],
+							_elm_lang$core$Basics$toString(model.window.h),
+							'px')
+					},
 					_1: {
 						ctor: '::',
 						_0: {
 							ctor: '_Tuple2',
-							_0: 'height',
+							_0: 'width',
 							_1: A2(
 								_elm_lang$core$Basics_ops['++'],
-								_elm_lang$core$Basics$toString(model.window.h),
+								_elm_lang$core$Basics$toString(model.window.w),
 								'px')
 						},
 						_1: {
 							ctor: '::',
-							_0: {
-								ctor: '_Tuple2',
-								_0: 'width',
-								_1: A2(
-									_elm_lang$core$Basics_ops['++'],
-									_elm_lang$core$Basics$toString(model.window.w),
-									'px')
-							},
+							_0: {ctor: '_Tuple2', _0: 'background', _1: 'url(assets/bg_stone.png)'},
 							_1: {ctor: '[]'}
 						}
 					}
@@ -11845,23 +11845,11 @@ var _jakub_c$elm_kanoid$Main$view = function (model) {
 					model.window.h,
 					{
 						ctor: '::',
-						_0: A5(
-							_jakub_c$elm_kanoid$Main$drawObj,
-							_elm_lang$core$Basics$round(
-								_elm_lang$core$Basics$toFloat(model.window.w) / 2) * -1,
-							_elm_lang$core$Basics$round(
-								_elm_lang$core$Basics$toFloat(model.window.h) / 2) * -1,
-							model.window.w,
-							model.window.h,
-							'assets/bg.png'),
+						_0: A5(_jakub_c$elm_kanoid$Main$drawObj, model.player.x, model.player.y, model.player.width, model.player.height, 'assets/spr_player.png'),
 						_1: {
 							ctor: '::',
-							_0: A5(_jakub_c$elm_kanoid$Main$drawObj, model.player.x, model.player.y, model.player.width, model.player.height, 'assets/player.png'),
-							_1: {
-								ctor: '::',
-								_0: A5(_jakub_c$elm_kanoid$Main$drawObj, model.ball.x, model.ball.y, model.ball.w, model.ball.h, 'assets/ball.png'),
-								_1: {ctor: '[]'}
-							}
+							_0: A5(_jakub_c$elm_kanoid$Main$drawObj, model.ball.x, model.ball.y, model.ball.w, model.ball.h, 'assets/spr_ball.png'),
+							_1: {ctor: '[]'}
 						}
 					})),
 			_1: {ctor: '[]'}
