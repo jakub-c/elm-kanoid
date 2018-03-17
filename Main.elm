@@ -276,20 +276,15 @@ moveBall model =
 view model =
     div
         [ style
-            [ ( "border", "solid 1px red" )
-            , ( "height", toString model.window.h ++ "px" )
+            [ ( "height", toString model.window.h ++ "px" )
             , ( "width", toString model.window.w ++ "px" )
+            , ( "background", "url(assets/bg_stone.png)")
             ]
         ]
         [ toHtml
             (collage model.window.w
                 model.window.h
-                [ drawObj (round (toFloat model.window.w / 2) * (-1))
-                    (round (toFloat model.window.h / 2) * (-1))
-                    model.window.w
-                    model.window.h
-                    "assets/bg_stone.png"
-                , drawObj model.player.x model.player.y model.player.width model.player.height "assets/spr_player.png"
+                [ drawObj model.player.x model.player.y model.player.width model.player.height "assets/spr_player.png"
                 , drawObj model.ball.x model.ball.y model.ball.w model.ball.h "assets/spr_ball.png"
                 ]
             )
