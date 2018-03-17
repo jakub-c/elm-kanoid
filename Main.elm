@@ -1,10 +1,7 @@
 module Main exposing (..)
 
--- import Html.Attributes exposing (..)
-
 import AnimationFrame exposing (..)
 import Collage exposing (..)
-import Color exposing (..)
 import Element exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (style)
@@ -19,12 +16,6 @@ main =
         , update = update
         , subscriptions = subscriptions
         }
-
-
-
--- TODO implement game loop:
--- https://stackoverflow.com/questions/12273451/how-to-fix-delay-in-javascript-keydown
--- MODEL
 
 
 type alias Window =
