@@ -278,7 +278,7 @@ view model =
         [ style
             [ ( "height", toString model.window.h ++ "px" )
             , ( "width", toString model.window.w ++ "px" )
-            , ( "background", "url(assets/bg_stone.png)")
+            , ( "background", "url(assets/bg_stone.png)" )
             ]
         ]
         [ toHtml
