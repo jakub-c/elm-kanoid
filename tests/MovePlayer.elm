@@ -83,7 +83,7 @@ suite =
             [ test
                 "player moves left"
               <|
-                \() ->
+                \_ ->
                     let
                         newModel =
                             movePlayer mockMoveLeft
@@ -92,7 +92,7 @@ suite =
             , test
                 "player moves right"
               <|
-                \() ->
+                \_ ->
                     let
                         newModel =
                             movePlayer mockMoveRight
@@ -103,7 +103,7 @@ suite =
             [ test
                 "player moves left, but is closer to the wall than the velocity distance"
               <|
-                \() ->
+                \_ ->
                     let
                         newModel =
                             movePlayer mockMoveLeftPastWall
