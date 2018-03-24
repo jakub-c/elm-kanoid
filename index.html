@@ -11875,7 +11875,7 @@ var _jakub_c$elm_kanoid$Main$moveBall = function (model) {
 		}) : _elm_lang$core$Native_Utils.update(
 		model,
 		{
-			ball: A3(updateBallPos, model.ball, model.ball.x + (model.ball.dirX * model.ball.velocity), model.ball.y - (model.ball.dirY * model.ball.velocity))
+			ball: A3(updateBallPos, model.ball, model.ball.x + model.ball.velX, model.ball.y - model.ball.velY)
 		});
 };
 var _jakub_c$elm_kanoid$Main$playerCollision = function (model) {
@@ -11884,16 +11884,16 @@ var _jakub_c$elm_kanoid$Main$playerCollision = function (model) {
 	var playerRightSide = model.player.x + model.player.width;
 	var playerLeftSide = model.player.x;
 	var ballX = model.ball.x;
-	var updateDirY = F2(
+	var updateVelY = F2(
 		function (data, dirVal) {
 			return _elm_lang$core$Native_Utils.update(
 				data,
-				{dirY: dirVal});
+				{velY: dirVal});
 		});
 	return ((_elm_lang$core$Native_Utils.cmp(model.ball.x, model.player.x + model.player.width) < 1) && ((_elm_lang$core$Native_Utils.cmp(model.ball.x + model.ball.w, model.player.x) > -1) && ((_elm_lang$core$Native_Utils.cmp(model.ball.y, model.player.y + model.player.height) < 1) && (_elm_lang$core$Native_Utils.cmp(model.ball.h + model.ball.y, model.player.y) > -1)))) ? _elm_lang$core$Native_Utils.update(
 		model,
 		{
-			ball: A2(updateDirY, model.ball, model.ball.dirY * -1)
+			ball: A2(updateVelY, model.ball, model.ball.velY * -1)
 		}) : model;
 };
 var _jakub_c$elm_kanoid$Main$ballCollisionWallY = function (model) {
@@ -11908,38 +11908,44 @@ var _jakub_c$elm_kanoid$Main$ballCollisionWallY = function (model) {
 	var topWall = _elm_lang$core$Basics$round(
 		_elm_lang$core$Basics$toFloat(model.window.h) / 2) - _elm_lang$core$Basics$round(
 		_elm_lang$core$Basics$toFloat(model.ball.h));
-	var updateDirY = F2(
-		function (data, dirVal) {
+	var updateRec = F3(
+		function (data, posVal, velVal) {
 			return _elm_lang$core$Native_Utils.update(
 				data,
-				{dirY: dirVal});
+				{y: posVal, velY: velVal});
 		});
-	return (_elm_lang$core$Native_Utils.cmp(model.ball.y - model.ball.velocity, topWall) > -1) ? _elm_lang$core$Native_Utils.update(
+	return (_elm_lang$core$Native_Utils.cmp(model.ball.y - model.ball.velY, topWall) > -1) ? _elm_lang$core$Native_Utils.update(
 		model,
 		{
-			ball: A2(updateDirY, model.ball, model.ball.dirY * -1)
-		}) : ((_elm_lang$core$Native_Utils.cmp(model.ball.y - model.ball.velocity, bottomWall) < 1) ? _elm_lang$core$Native_Utils.update(
+			ball: A3(updateRec, model.ball, topWall, model.ball.velY * -1)
+		}) : ((_elm_lang$core$Native_Utils.cmp(model.ball.y - model.ball.velY, bottomWall) < 1) ? _elm_lang$core$Native_Utils.update(
 		model,
 		{
 			ball: resetBall(model.ball)
 		}) : model);
 };
 var _jakub_c$elm_kanoid$Main$ballCollisionWallX = function (model) {
+	var ballHalfWidth = _elm_lang$core$Basics$round(
+		_elm_lang$core$Basics$toFloat(model.ball.w) / 2);
 	var leftWall = _elm_lang$core$Basics$round(
 		_elm_lang$core$Basics$toFloat(model.window.w) / 2) * -1;
 	var rightWall = _elm_lang$core$Basics$round(
 		_elm_lang$core$Basics$toFloat(model.window.w) / 2) - model.ball.w;
-	var updateDirX = F2(
-		function (data, dirVal) {
+	var updateRec = F3(
+		function (data, posVal, velVal) {
 			return _elm_lang$core$Native_Utils.update(
 				data,
-				{dirX: dirVal});
+				{x: posVal, velX: velVal});
 		});
-	return ((_elm_lang$core$Native_Utils.cmp(model.ball.x + model.ball.velocity, leftWall) < 1) || (_elm_lang$core$Native_Utils.cmp(model.ball.x - model.ball.velocity, rightWall) > -1)) ? _elm_lang$core$Native_Utils.update(
+	return (_elm_lang$core$Native_Utils.cmp(model.ball.x + model.ball.velX, leftWall) < 1) ? _elm_lang$core$Native_Utils.update(
 		model,
 		{
-			ball: A2(updateDirX, model.ball, model.ball.dirX * -1)
-		}) : model;
+			ball: A3(updateRec, model.ball, leftWall, model.ball.velX * -1)
+		}) : ((_elm_lang$core$Native_Utils.cmp(model.ball.x + model.ball.velX, rightWall) > -1) ? _elm_lang$core$Native_Utils.update(
+		model,
+		{
+			ball: A3(updateRec, model.ball, rightWall, model.ball.velX * -1)
+		}) : model);
 };
 var _jakub_c$elm_kanoid$Main$movePlayer = function (model) {
 	var updatePlayerX = F2(
@@ -12040,11 +12046,11 @@ var _jakub_c$elm_kanoid$Main$update = F2(
 			default:
 				return {
 					ctor: '_Tuple2',
-					_0: _jakub_c$elm_kanoid$Main$moveBall(
-						_jakub_c$elm_kanoid$Main$movePlayer(
-							_jakub_c$elm_kanoid$Main$playerCollision(
-								_jakub_c$elm_kanoid$Main$ballCollisionWallY(
-									_jakub_c$elm_kanoid$Main$ballCollisionWallX(model))))),
+					_0: _jakub_c$elm_kanoid$Main$movePlayer(
+						_jakub_c$elm_kanoid$Main$playerCollision(
+							_jakub_c$elm_kanoid$Main$ballCollisionWallY(
+								_jakub_c$elm_kanoid$Main$ballCollisionWallX(
+									_jakub_c$elm_kanoid$Main$moveBall(model))))),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 		}
@@ -12061,7 +12067,7 @@ var _jakub_c$elm_kanoid$Main$init = {
 		},
 		window: {w: 640, h: 480},
 		keyPressed: {left: false, right: false},
-		ball: {x: 0, y: 0, w: 20, h: 20, velocity: 5, init: true, dirX: 1, dirY: -1}
+		ball: {x: 0, y: 0, w: 20, h: 20, init: true, velX: 5, velY: -5}
 	},
 	_1: _elm_lang$core$Platform_Cmd$none
 };
@@ -12073,9 +12079,9 @@ var _jakub_c$elm_kanoid$Main$KeyPressed = F2(
 	function (a, b) {
 		return {left: a, right: b};
 	});
-var _jakub_c$elm_kanoid$Main$Ball = F8(
-	function (a, b, c, d, e, f, g, h) {
-		return {x: a, y: b, w: c, h: d, velocity: e, init: f, dirX: g, dirY: h};
+var _jakub_c$elm_kanoid$Main$Ball = F7(
+	function (a, b, c, d, e, f, g) {
+		return {x: a, y: b, w: c, h: d, init: e, velX: f, velY: g};
 	});
 var _jakub_c$elm_kanoid$Main$Player = F5(
 	function (a, b, c, d, e) {

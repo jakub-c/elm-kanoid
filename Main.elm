@@ -1,10 +1,7 @@
 module Main exposing (..)
 
--- import Html.Attributes exposing (..)
-
 import AnimationFrame exposing (..)
 import Collage exposing (..)
-import Color exposing (..)
 import Element exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (style)
@@ -19,12 +16,6 @@ main =
         , update = update
         , subscriptions = subscriptions
         }
-
-
-
--- TODO implement game loop:
--- https://stackoverflow.com/questions/12273451/how-to-fix-delay-in-javascript-keydown
--- MODEL
 
 
 type alias Window =
@@ -42,10 +33,9 @@ type alias Ball =
     , y : Int
     , w : Int
     , h : Int
-    , velocity : Int
     , init : Bool
-    , dirX : Int
-    , dirY : Int
+    , velX : Int
+    , velY : Int
     }
 
 
@@ -91,10 +81,9 @@ init =
             , y = 0
             , w = 20
             , h = 20
-            , velocity = 5
             , init = True
-            , dirX = 1
-            , dirY = -1
+            , velX = 5
+            , velY = -5
             }
       }
     , Cmd.none
@@ -145,11 +134,11 @@ update msg model =
 
             Tick newTime ->
                 ( model
+                    |> moveBall
                     |> ballCollisionWallX
                     |> ballCollisionWallY
                     |> playerCollision
                     |> movePlayer
-                    |> moveBall
                 , Cmd.none
                 )
 
@@ -177,29 +166,42 @@ movePlayer model =
 
 ballCollisionWallX model =
     let
-        updateDirX data dirVal =
-            { data | dirX = dirVal }
+        updateRec data posVal velVal =
+            { data | x = posVal, velX = velVal }
 
         rightWall =
             round (toFloat model.window.w / 2) - model.ball.w
 
         leftWall =
             round (toFloat model.window.w / 2) * (-1)
+
+        ballHalfWidth =
+            round (toFloat model.ball.w / 2)
     in
-        if
-            ((model.ball.x + model.ball.velocity <= leftWall)
-                || (model.ball.x - model.ball.velocity >= rightWall)
-            )
-        then
-            { model | ball = updateDirX model.ball (model.ball.dirX * (-1)) }
+        if model.ball.x + model.ball.velX <= leftWall then
+            { model
+                | ball =
+                    updateRec
+                        model.ball
+                        leftWall
+                        (model.ball.velX * (-1))
+            }
+        else if model.ball.x + model.ball.velX >= rightWall then
+            { model
+                | ball =
+                    updateRec
+                        model.ball
+                        rightWall
+                        (model.ball.velX * (-1))
+            }
         else
             model
 
 
 ballCollisionWallY model =
     let
-        updateDirY data dirVal =
-            { data | dirY = dirVal }
+        updateRec data posVal velVal =
+            { data | y = posVal, velY = velVal }
 
         topWall =
             (round (toFloat model.window.h / 2) - round (toFloat model.ball.h))
@@ -210,9 +212,15 @@ ballCollisionWallY model =
         resetBall data =
             { data | init = True }
     in
-        if (model.ball.y - model.ball.velocity >= topWall) then
-            { model | ball = updateDirY model.ball (model.ball.dirY * (-1)) }
-        else if (model.ball.y - model.ball.velocity <= bottomWall) then
+        if (model.ball.y - model.ball.velY >= topWall) then
+            { model
+                | ball =
+                    updateRec
+                        model.ball
+                        topWall
+                        (model.ball.velY * (-1))
+            }
+        else if (model.ball.y - model.ball.velY <= bottomWall) then
             { model | ball = resetBall model.ball }
         else
             model
@@ -220,8 +228,8 @@ ballCollisionWallY model =
 
 playerCollision model =
     let
-        updateDirY data dirVal =
-            { data | dirY = dirVal }
+        updateVelY data dirVal =
+            { data | velY = dirVal }
 
         ballX =
             model.ball.x
@@ -245,7 +253,7 @@ playerCollision model =
                 && (model.ball.h + model.ball.y >= model.player.y)
             )
         then
-            { model | ball = updateDirY model.ball (model.ball.dirY * (-1)) }
+            { model | ball = updateVelY model.ball (model.ball.velY * (-1)) }
         else
             model
 
@@ -268,8 +276,8 @@ moveBall model =
                 | ball =
                     updateBallPos
                         model.ball
-                        (model.ball.x + model.ball.dirX * model.ball.velocity)
-                        (model.ball.y - model.ball.dirY * model.ball.velocity)
+                        (model.ball.x + model.ball.velX)
+                        (model.ball.y - model.ball.velY)
             }
 
 
