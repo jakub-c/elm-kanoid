@@ -94,7 +94,7 @@ suite =
                         newModel =
                             ballCollisionWallX mockBallMovTopRightWall
                     in
-                        Expect.equal newModel.ball.x 295
+                        Expect.equal newModel.ball.x 300
             , test
                 "ball moves top right vel"
               <|
