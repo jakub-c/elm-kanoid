@@ -1,0 +1,10 @@
+{
+  "name": "Elmkanoid",
+  "dockerFile": "Dockerfile",
+  "appPort": [8000],
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/bash"
+  },
+  "postCreateCommand": "elm reactor",
+  "extensions": ["Elmtooling.elm-ls-vscode"]
+}
